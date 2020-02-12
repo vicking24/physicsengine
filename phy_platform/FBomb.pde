@@ -33,8 +33,8 @@ class FBomb extends FBox {
   while (i<boxes.size()) {
   FBox b= boxes.get (i);
   if (dist (this.getX(), this.getY(), b.getX(), b.getY ()) <gridsize*5) {
-    float vx= b.getX()-this.getX(); //exploading, if want it to suck the grid like a blackhole, reverse the equation
-    float vy= b.getY()-this.getY();
+    float vx= (b.getX()-this.getX())*2; //exploading, if want it to suck the grid like a blackhole, reverse the equation
+    float vy= (b.getY()-this.getY())*2;
     b.setVelocity (vx*3, vy*3);
   b.setStatic (false);
 
