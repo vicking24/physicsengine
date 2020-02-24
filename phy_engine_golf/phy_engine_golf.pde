@@ -1,7 +1,9 @@
 //victoria 
 //feb 18
 
-//start, timer
+//point need to be added before start goes false
+//the obj doesnt start at the sides
+//game end
 
 import fisica.*;
 
@@ -9,96 +11,132 @@ boolean up, down, left, right, canjump, start;
 
 float tall1, tall2, tall3, tall4, tall5;
 
-int point=0;
+int point=0, starttimer=0, timer=120, countdown=0;
 
 FWorld world;
 FCircle player, ball, hole; 
-FPoly ground, lwall, rwall,ceiling;
+FPoly ground, lwall, rwall, ceiling;
 FBox ob1, ob2, ob3, ob4, ob5;
 
 void setup () {
-size (800, 800);
+  size (800, 800);
+  start=true;
+  textAlign (CENTER, CENTER);
 
-tall1=random (50, 150);
-tall2=random (50, 150);
-tall3=random (50, 150);
-tall4=random (50, 150);
-tall5= random (100, 200);
+  tall1=random (50, 150);
+  tall2=random (50, 150);
+  tall3=random (50, 150);
+  tall4=random (50, 150);
+  tall5= random (100, 200);
 
-Fisica.init(this);
-world=new FWorld();
-world.setGravity (0, 600);
+  Fisica.init(this);
+  world=new FWorld();
+  world.setGravity (0, 600);
 
-ground();
-player();
-lwall();
-rwall();
-ceiling();
-ob1();
-ob2();
-ob3();
-ob4();
-ob5();
-ball();
-hole();
-
+  ground();
+  player();
+  lwall();
+  rwall();
+  ceiling();
+  ob1();
+  ob2();
+  ob3();
+  ob4();
+  ob5();
+  ball();
+  hole();
 }
 
 void draw () {
-  background (255);
-canjump=false;
 
-textSize (30);
-fill (0);
-text ("Points:"+point, 650, 30);
+  canjump=false;
 
+  if (start==true) {
 
-ArrayList <FContact> contact= player.getContacts();
+    background (255);
 
-for (FContact c : contact) {
+    textSize (30);
+    fill (0);
+    text ("Points:"+point, 700, 30);
+   
+    text ("Time Left:"+timer+"s", 100, 30);
+    
+    countdown++;
+    if (countdown>60) {
+    timer--;
+    countdown=0;
+    }
+
+    if (ball.getVelocityX()>1500) ball.setVelocity(1500, ball.getVelocityY());
+    if (ball.getVelocityY()>1500) ball.setVelocity (ball.getVelocityX(), 1500);
+
+    ArrayList <FContact> contact= player.getContacts();
+
+    for (FContact c : contact) {
       if (c.contains (ground)|| c.contains (ob1)||  c.contains (ob2)|| c.contains (ob3)|| c.contains (ob4)|| c.contains (ob5)) canjump=true;
     }
-    
-if (up&& canjump) player.addImpulse (0, -1200);
+
+    if (up&& canjump) player.addImpulse (0, -1200);
     if (left) player.addImpulse (-120, 0);
     if (right) player.addImpulse (120, 0);
-    
-ArrayList <FContact> contactb= ball.getContacts();
 
-for (FContact b:contactb) {
- if (b.contains (hole)) point++;
-}
+    ArrayList <FContact> contactb= ball.getContacts();
 
-    
-world.step();
-world.draw();
+    for (FContact b : contactb) {
+      if (b.contains (hole)) {
+        point++;
+        tall1=random (50, 150);
+        tall2=random (50, 150);
+        tall3=random (50, 150);
+        tall4=random (50, 150);
+        tall5=random (100, 200);
+        ob1.setPosition (random (100, width-100), height-100-tall1/2);
+        ob2.setPosition (random (100, width-100), tall2/2);
+        ob3.setPosition (tall3/2, random (100, height-150));
+        ob4.setPosition (width-tall4/2, random (100, height-150));
+        ob5.setPosition (width/2, height/2+100);
+        hole.setPosition (random (120, width-120), random (120, height-100-20));
+        ball.setPosition (random (0, 500), 300);
+        ball.setVelocity (0, 0);
+        player.setPosition (random (0, 500), 500);
+        player.setVelocity (0, 0);
+        start=false;
+      }
+    }
 
 
+    world.step();
+    world.draw();
+  } else {
+    starttimer++;
+
+    if (starttimer>120) {
+      start=true;
+      starttimer=0;
+    }
+  }
 }
 
 void ground() {
-ground= new FPoly();
+  ground= new FPoly();
 
   ground.vertex (0, height);
   ground.vertex (0, 700);
   ground.vertex (width, 700);
   ground.vertex (width, height);
 
-ground.setStatic (true);
-ground.setFill (0);
+  ground.setStatic (true);
+  ground.setFill (0);
 
-world.add (ground);
-
+  world.add (ground);
 }
 
 void player() {
-player= new FCircle (50);
-player.setPosition (random (0, 500), 500);
-player.setFill (255, 0, 0);
+  player= new FCircle (50);
+  player.setPosition (random (0, 500), 500);
+  player.setFill (255, 0, 0);
 
-world.add (player);
-  
-
+  world.add (player);
 }
 
 void lwall() {
@@ -149,7 +187,7 @@ void ceiling () {
 void ob1 () {
 
   ob1= new FBox(10, tall1);
-  ob1.setPosition (random (0, width), height-100-tall1/2);
+  ob1.setPosition (random (100, width-100), height-100-tall1/2);
 
   ob1.setStatic (true);
   ob1.setFill (0);
@@ -158,51 +196,45 @@ void ob1 () {
 }
 
 void ob2() {
-ob2= new FBox(10, tall2);
-  ob2.setPosition (random (0, width), tall2/2);
-  
+  ob2= new FBox(10, tall2);
+  ob2.setPosition (random (150, width-150), tall2/2);
+
   ob2.setStatic (true);
   ob2.setFill (255, 0, 0);
 
   world.add(ob2);
-  
-  
 }
 
 void ob3() {
 
   ob3= new FBox(tall3, 10);
-  ob3.setPosition (tall3/2, random (0, height-100));
-  
+  ob3.setPosition (tall3/2, random (100, height-150));
+
   ob3.setStatic (true);
   ob3.setFill (0, 255, 0);
 
   world.add(ob3);
-  
 }
 
 void ob4() {
 
   ob4= new FBox(tall4, 10);
-  ob4.setPosition (width-tall4/2, random (0, height-100));
-  
+  ob4.setPosition (width-tall4/2, random (100, height-150));
+
   ob4.setStatic (true);
   ob4.setFill (0, 0, 255);
 
   world.add(ob4);
-  
 }
 
 void ob5 () {
-ob5= new FBox(tall5, 10);
+  ob5= new FBox(tall5, 10);
   ob5.setPosition (width/2, height/2+100);
-  
+
   ob5.setStatic (true);
   ob5.setFill (255);
 
   world.add(ob5);
-
-
 }
 
 
@@ -212,20 +244,21 @@ void ball () {
 
   ball.setRestitution (1.2);
 
+
+
   ball.setFill (255);
 
   world.add (ball);
 }
 
 void hole () {
- hole = new FCircle (40);
- hole .setPosition (random (20, width-20), random (20, height-100-20));
- 
- hole.setFill (0);
- hole.setStatic (true);
- 
- world.add (hole);
+  hole = new FCircle (40);
+  hole.setPosition (random (120, width-120), random (120, height-100-20));
 
+  hole.setFill (0);
+  hole.setStatic (true);
+
+  world.add (hole);
 }
 
 
@@ -233,7 +266,6 @@ void keyPressed () {
   if (keyCode == UP) up=true;
   if (keyCode == LEFT) left=true;
   if (keyCode == RIGHT) right=true;
- 
 }
 
 void keyReleased () {
