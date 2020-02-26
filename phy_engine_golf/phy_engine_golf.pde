@@ -1,8 +1,6 @@
 //victoria 
 //feb 18
 
-//point need to be added before start goes false
-//the obj doesnt start at the sides
 //game end
 
 import fisica.*;
@@ -23,7 +21,7 @@ void setup () {
   start=true;
   textAlign (CENTER, CENTER);
 
-  tall1=random (50, 150);
+  tall1=random (70, 150);
   tall2=random (50, 150);
   tall3=random (50, 150);
   tall4=random (50, 150);
@@ -55,16 +53,14 @@ void draw () {
 
     background (255);
 
-    textSize (30);
     fill (0);
-    text ("Points:"+point, 700, 30);
-   
-    text ("Time Left:"+timer+"s", 100, 30);
-    
+    textSize (30);
+    text ("Time Left:"+timer+"s", 105, 30);
+
     countdown++;
     if (countdown>60) {
-    timer--;
-    countdown=0;
+      timer--;
+      countdown=0;
     }
 
     if (ball.getVelocityX()>1500) ball.setVelocity(1500, ball.getVelocityY());
@@ -85,16 +81,21 @@ void draw () {
     for (FContact b : contactb) {
       if (b.contains (hole)) {
         point++;
-        tall1=random (50, 150);
+        tall1=random (70, 150);
         tall2=random (50, 150);
         tall3=random (50, 150);
         tall4=random (50, 150);
         tall5=random (100, 200);
-        ob1.setPosition (random (100, width-100), height-100-tall1/2);
-        ob2.setPosition (random (100, width-100), tall2/2);
-        ob3.setPosition (tall3/2, random (100, height-150));
-        ob4.setPosition (width-tall4/2, random (100, height-150));
+        ob1.setPosition (random (150, width-150), height-100-tall1/2);
+        ob1.setHeight (tall1);
+        ob2.setPosition (random (200, width-150), tall2/2);
+        ob2.setHeight (tall2);
+        ob3.setPosition (tall3/2, random (200, height-150));
+        ob3.setWidth(tall3);
+        ob4.setPosition (width-tall4/2, random (200, height-150));
+        ob4.setWidth (tall4);
         ob5.setPosition (width/2, height/2+100);
+        ob5.setWidth (tall5);
         hole.setPosition (random (120, width-120), random (120, height-100-20));
         ball.setPosition (random (0, 500), 300);
         ball.setVelocity (0, 0);
@@ -105,15 +106,31 @@ void draw () {
     }
 
 
+    textSize (30);
+    fill (0);
+    text ("Points:"+point, 700, 30);
+    
+    if (timer<0){
+    start=false;
+    }
+
     world.step();
     world.draw();
   } else {
     starttimer++;
 
-    if (starttimer>120) {
+    if (timer>0 && starttimer>120) {
       start=true;
       starttimer=0;
+    } 
+    
+    if (timer<=0) {
+    background (0);
+    fill (255);
+    textSize (50);
+    text ("SCORE:"+point, width/2, height/2);
     }
+    
   }
 }
 
@@ -187,7 +204,7 @@ void ceiling () {
 void ob1 () {
 
   ob1= new FBox(10, tall1);
-  ob1.setPosition (random (100, width-100), height-100-tall1/2);
+  ob1.setPosition (random (150, width-150), height-100-tall1/2);
 
   ob1.setStatic (true);
   ob1.setFill (0);
@@ -197,7 +214,7 @@ void ob1 () {
 
 void ob2() {
   ob2= new FBox(10, tall2);
-  ob2.setPosition (random (150, width-150), tall2/2);
+  ob2.setPosition (random (200, width-150), tall2/2);
 
   ob2.setStatic (true);
   ob2.setFill (255, 0, 0);
@@ -208,7 +225,7 @@ void ob2() {
 void ob3() {
 
   ob3= new FBox(tall3, 10);
-  ob3.setPosition (tall3/2, random (100, height-150));
+  ob3.setPosition (tall3/2, random (200, height-150));
 
   ob3.setStatic (true);
   ob3.setFill (0, 255, 0);
@@ -219,7 +236,7 @@ void ob3() {
 void ob4() {
 
   ob4= new FBox(tall4, 10);
-  ob4.setPosition (width-tall4/2, random (100, height-150));
+  ob4.setPosition (width-tall4/2, random (200, height-150));
 
   ob4.setStatic (true);
   ob4.setFill (0, 0, 255);
