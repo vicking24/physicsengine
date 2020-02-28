@@ -11,15 +11,24 @@ float tall1, tall2, tall3, tall4, tall5;
 
 int point=0, starttimer=0, timer=120, countdown=0;
 
+PImage gball, swing, grass;
+
 FWorld world;
 FCircle player, ball, hole; 
-FPoly ground, lwall, rwall, ceiling;
-FBox ob1, ob2, ob3, ob4, ob5;
+FPoly  lwall, rwall, ceiling;
+FBox ob1, ob2, ob3, ob4, ob5, ground;
 
 void setup () {
   size (800, 800);
   start=true;
   textAlign (CENTER, CENTER);
+  gball=loadImage ("golf ball black.png");
+  swing=loadImage ("swing2.png");
+  grass=loadImage ("grass.png");
+  
+  gball.resize (25, 25);
+  swing.resize (50, 50);
+  grass.resize (width, 100);
 
   tall1=random (70, 150);
   tall2=random (50, 150);
@@ -135,15 +144,14 @@ void draw () {
 }
 
 void ground() {
-  ground= new FPoly();
-
-  ground.vertex (0, height);
-  ground.vertex (0, 700);
-  ground.vertex (width, 700);
-  ground.vertex (width, height);
+  ground= new FBox(width, 100);
+  
+  ground.setPosition (width/2, 750);
 
   ground.setStatic (true);
   ground.setFill (0);
+  
+  //ground.attachImage (grass);
 
   world.add (ground);
 }
@@ -152,6 +160,8 @@ void player() {
   player= new FCircle (50);
   player.setPosition (random (0, 500), 500);
   player.setFill (255, 0, 0);
+  player.attachImage (swing);
+  player.setRotatable (false);
 
   world.add (player);
 }
@@ -256,12 +266,12 @@ void ob5 () {
 
 
 void ball () {
-  ball= new FCircle (20);
+  ball= new FCircle (25);
   ball. setPosition (random (0, 500), 300);
 
   ball.setRestitution (1.2);
 
-
+  ball.attachImage (gball);
 
   ball.setFill (255);
 
