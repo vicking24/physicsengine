@@ -6,7 +6,7 @@
 import fisica.*;
 
 PImage map;
-int x, y, vx=0;
+int x, y, vx, direction=0;
 color black =color (0, 0, 0);
 color green = color (34, 177, 76);
 color red= color (255, 0, 0);
@@ -26,6 +26,7 @@ ArrayList <PImage> jump;
 ArrayList <PImage> walkleft;
 ArrayList <PImage> walkright;
 ArrayList <PImage> currentaction;
+ArrayList <PImage> previousaction;
 int costumenum=0;
 int frame=0;
 
@@ -42,8 +43,7 @@ void setup () {
   boxes= new ArrayList();
 
   textAlign (CENTER, CENTER);
-  //imageMode (CENTER);
-
+  
   map=loadImage ("map.png");
 
   while ( y< map.height) {
@@ -124,26 +124,31 @@ void draw () {
   world.step();
   world.draw ();
   popMatrix();
-
+ 
+ vx=0;
+ 
+ previousaction=currentaction;
+ 
   if (left) {
     vx=-150;
     currentaction=walkleft;
-    costumenum=0;
+   direction=1;
   }
   if (right) {
     vx=150;
     currentaction=walkright;
-    costumenum=0;
+    direction=0;
+   
   }
 
-  if (!right && !left&&vx>0) {
+  if (!right && !left&&direction==0) {
     currentaction=idler;
-    costumenum=0;
+   
   }
   
-   if (!right && !left&&vx<0) {
+   if (!right && !left&&direction==1) {
     currentaction=idlel;
-    costumenum=0;
+  
   }
 
   rplayer.setVelocity (vx, rplayer.getVelocityY());
@@ -157,7 +162,12 @@ void draw () {
 
   if (bomb!=null) bomb.act();
 
-  rplayer.attachImage (currentaction.get (costumenum));
+ 
+  
+  if (currentaction!= previousaction) {
+  costumenum=0;
+  
+  }
 
 
   if (frameCount%10==0) {
@@ -166,6 +176,8 @@ void draw () {
       costumenum=0;
     }
   }
+  
+   rplayer.attachImage (currentaction.get (costumenum));
 }
 
 
@@ -179,7 +191,7 @@ void lplayer() {
 }
 
 void rplayer () {
-  rplayer= new FBox(20, 20);
+  rplayer= new FBox(20,20);
   rplayer.setPosition (100, 300);
 
   //rplayer.setFill (0, 255, 0);
